@@ -1,0 +1,981 @@
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mézinvest - Gestion d'Équipe Football</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'soccer-green': {
+                            50: '#f0fdf4',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d'
+                        },
+                        'team-blue': {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/heroicons@2.0.18/dist/outline.min.js"></script>
+</head>
+
+<body class="h-full bg-gray-50 font-sans">
+    <!-- @COMPONENT: AppLayout -->
+    <div class="min-h-full">
+        <!-- Navigation Header -->
+        <!-- @COMPONENT: NavigationHeader -->
+        <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-soccer-green-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM13 17h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-900">Mézinvest</h1>
+                            <p class="text-xs text-gray-500">Club Privé Football</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Tabs -->
+                    <div class="hidden md:flex space-x-8">
+                        <button data-tab="inventory" class="nav-tab-active text-soccer-green-600 border-b-2 border-soccer-green-500 px-3 py-2 text-sm font-medium">
+                            Inventaire Joueurs
+                        </button>
+                        <button data-tab="teams" class="nav-tab text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium">
+                            Composition Équipes
+                        </button>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Navigation -->
+            <div class="md:hidden border-t border-gray-200 bg-gray-50">
+                <div class="px-4 py-3 space-y-1">
+                    <button data-tab="inventory" class="nav-tab-active block w-full text-left px-3 py-2 text-base font-medium text-soccer-green-600 bg-soccer-green-50 rounded-md">
+                        Inventaire Joueurs
+                    </button>
+                    <button data-tab="teams" class="nav-tab block w-full text-left px-3 py-2 text-base font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md">
+                        Composition Équipes
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <!-- @END_COMPONENT: NavigationHeader -->
+
+        <!-- Main Content Area -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- Player Inventory Tab -->
+            <!-- @COMPONENT: PlayerInventoryTab -->
+            <div id="inventory-tab" class="tab-content">
+                <!-- Header with Actions -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900">Inventaire des Joueurs</h2>
+                        <p class="text-gray-600 mt-1">Gérez vos joueurs et leurs statistiques</p>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3">
+                        <button data-event="click:handleSearch" class="btn-secondary flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <span>Rechercher</span>
+                        </button>
+                        <button data-event="click:handleCreatePlayer" class="btn-primary flex items-center space-x-2 bg-soccer-green-500 text-white px-6 py-2 rounded-lg hover:bg-soccer-green-600 transition-colors font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            <span>Nouveau Joueur</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Bar -->
+                <!-- @COMPONENT: SearchFilterBar -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
+                            <input type="text" placeholder="Nom du joueur..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-soccer-green-500 focus:border-transparent" data-bind="searchQuery">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-soccer-green-500 focus:border-transparent" data-bind="positionFilter">
+                                <option value="">Toutes les positions</option>
+                                <option value="goalkeeper">Gardien</option>
+                                <option value="defender">Défenseur</option>
+                                <option value="midfielder">Milieu</option>
+                                <option value="attacker">Attaquant</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Note minimum</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-soccer-green-500 focus:border-transparent" data-bind="ratingFilter">
+                                <option value="">Toutes les notes</option>
+                                <option value="3">3 étoiles</option>
+                                <option value="2">2 étoiles et +</option>
+                                <option value="1">1 étoile et +</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button class="w-full px-4 py-2 bg-team-blue-500 text-white rounded-lg hover:bg-team-blue-600 transition-colors">
+                                Filtrer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_COMPONENT: SearchFilterBar -->
+
+                <!-- Player Cards Grid -->
+                <!-- @MAP: players.map(player => ( -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    
+                    <!-- Player Card 1 -->
+                    <!-- @COMPONENT: PlayerCard [player data] -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200" data-mock="true">
+                        <div class="relative">
+                            <!-- Soccer player action shot with ball control -->
+                            <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Player photo" class="w-full h-48 object-cover" data-mock-image="true">
+                            <div class="absolute top-3 right-3 bg-soccer-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                Milieu
+                            </div>
+                        </div>
+                        
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900" data-bind="player.fullName">Chanal Christophe</h3>
+                                    <p class="text-sm text-gray-500">Pied droit</p>
+                                </div>
+                                
+                                <!-- Overall Rating Stars -->
+                                <div class="flex items-center space-x-1">
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Skills Progress Bars -->
+                            <div class="space-y-2 mb-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Vitesse</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Endurance</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Technique</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex space-x-2">
+                                <button class="flex-1 px-3 py-2 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors" data-event="click:editPlayer">
+                                    Modifier
+                                </button>
+                                <button class="flex-1 px-3 py-2 text-xs bg-team-blue-500 text-white rounded-lg hover:bg-team-blue-600 transition-colors" data-event="click:viewDetails">
+                                    Détails
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- @END_COMPONENT: PlayerCard -->
+
+                    <!-- Player Card 2 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200" data-mock="true">
+                        <div class="relative">
+                            <!-- Soccer goalkeeper making a diving save -->
+                            <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Player photo" class="w-full h-48 object-cover" data-mock-image="true">
+                            <div class="absolute top-3 right-3 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                Gardien
+                            </div>
+                        </div>
+                        
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900" data-bind="player.fullName">Martin Lucas</h3>
+                                    <p class="text-sm text-gray-500">Pied gauche</p>
+                                </div>
+                                
+                                <div class="flex items-center space-x-1">
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 mb-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Vitesse</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Endurance</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Technique</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button class="flex-1 px-3 py-2 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                    Modifier
+                                </button>
+                                <button class="flex-1 px-3 py-2 text-xs bg-team-blue-500 text-white rounded-lg hover:bg-team-blue-600 transition-colors">
+                                    Détails
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Player Card 3 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200" data-mock="true">
+                        <div class="relative">
+                            <!-- Soccer player running with ball on grass field -->
+                            <img src="https://images.unsplash.com/photo-1553778263-73a83bab9b0c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Player photo" class="w-full h-48 object-cover" data-mock-image="true">
+                            <div class="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                Attaquant
+                            </div>
+                        </div>
+                        
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900" data-bind="player.fullName">Dubois Antoine</h3>
+                                    <p class="text-sm text-gray-500">Pied droit</p>
+                                </div>
+                                
+                                <div class="flex items-center space-x-1">
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 mb-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Vitesse</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Endurance</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Technique</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button class="flex-1 px-3 py-2 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                    Modifier
+                                </button>
+                                <button class="flex-1 px-3 py-2 text-xs bg-team-blue-500 text-white rounded-lg hover:bg-team-blue-600 transition-colors">
+                                    Détails
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Player Card 4 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-200" data-mock="true">
+                        <div class="relative">
+                            <!-- Soccer defender making a sliding tackle -->
+                            <img src="https://images.unsplash.com/photo-1560272564-c83b66b1ad12?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Player photo" class="w-full h-48 object-cover" data-mock-image="true">
+                            <div class="absolute top-3 right-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                Défenseur
+                            </div>
+                        </div>
+                        
+                        <div class="p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900" data-bind="player.fullName">Leroy Thomas</h3>
+                                    <p class="text-sm text-gray-500">Les deux pieds</p>
+                                </div>
+                                
+                                <div class="flex items-center space-x-1">
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 mb-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Vitesse</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                                        <div class="w-2 h-2 rounded-full bg-gray-200"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Endurance</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-600">Physique</span>
+                                    <div class="flex space-x-1">
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                        <div class="w-2 h-2 rounded-full bg-soccer-green-500"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button class="flex-1 px-3 py-2 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                                    Modifier
+                                </button>
+                                <button class="flex-1 px-3 py-2 text-xs bg-team-blue-500 text-white rounded-lg hover:bg-team-blue-600 transition-colors">
+                                    Détails
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden text-center py-12">
+                    <div class="max-w-sm mx-auto">
+                        <!-- Soccer ball and cleats on grass -->
+                        <img src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=400&h=300" alt="Soccer equipment on grass" class="w-32 h-32 mx-auto mb-4 rounded-xl opacity-50" data-mock-image="true">
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun joueur trouvé</h3>
+                        <p class="text-gray-500 mb-6">Commencez par ajouter votre premier joueur à l'équipe.</p>
+                        <button class="btn-primary bg-soccer-green-500 text-white px-6 py-2 rounded-lg hover:bg-soccer-green-600 transition-colors">
+                            Ajouter un joueur
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: PlayerInventoryTab -->
+
+            <!-- Team Composition Tab -->
+            <!-- @COMPONENT: TeamCompositionTab -->
+            <div id="teams-tab" class="tab-content hidden">
+                <div class="flex flex-col lg:flex-row gap-8">
+                    
+                    <!-- Team Formation Area -->
+                    <div class="lg:w-2/3">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-2xl font-bold text-gray-900">Formation d'Équipe</h2>
+                                <div class="flex space-x-2">
+                                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm" data-bind="formationSelect">
+                                        <option value="4-4-2">4-4-2</option>
+                                        <option value="4-3-3">4-3-3</option>
+                                        <option value="3-5-2">3-5-2</option>
+                                        <option value="4-5-1">4-5-1</option>
+                                    </select>
+                                    <button class="px-4 py-2 bg-soccer-green-500 text-white rounded-lg hover:bg-soccer-green-600 transition-colors text-sm">
+                                        Sauvegarder
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Soccer Field Layout -->
+                            <div class="relative w-full h-96 sm:h-[500px] rounded-xl overflow-hidden" style="background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);">
+                                <!-- Soccer field lines -->
+                                <div class="absolute inset-0 opacity-20">
+                                    <!-- Center circle -->
+                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 border-2 border-white rounded-full"></div>
+                                    <!-- Center line -->
+                                    <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white transform -translate-x-1/2"></div>
+                                    <!-- Penalty areas -->
+                                    <div class="absolute top-4 left-1/2 transform -translate-x-1/2 w-16 h-12 border-2 border-white border-b-0"></div>
+                                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-16 h-12 border-2 border-white border-t-0"></div>
+                                </div>
+
+                                <!-- Player Positions - Defensive Line -->
+                                <div class="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-8">
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="defender" data-droppable="true">
+                                        <span class="text-xs font-bold text-gray-700">DF</span>
+                                    </div>
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="defender">
+                                        <span class="text-xs font-bold text-gray-700">DF</span>
+                                    </div>
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="defender">
+                                        <span class="text-xs font-bold text-gray-700">DF</span>
+                                    </div>
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="defender">
+                                        <span class="text-xs font-bold text-gray-700">DF</span>
+                                    </div>
+                                </div>
+
+                                <!-- Midfield Line -->
+                                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex space-x-12">
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="midfielder">
+                                        <span class="text-xs font-bold text-gray-700">MF</span>
+                                    </div>
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="midfielder">
+                                        <span class="text-xs font-bold text-gray-700">MF</span>
+                                    </div>
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="midfielder">
+                                        <span class="text-xs font-bold text-gray-700">MF</span>
+                                    </div>
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="midfielder">
+                                        <span class="text-xs font-bold text-gray-700">MF</span>
+                                    </div>
+                                </div>
+
+                                <!-- Attack Line -->
+                                <div class="absolute top-16 left-1/2 transform -translate-x-1/2 flex space-x-16">
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="attacker">
+                                        <span class="text-xs font-bold text-gray-700">FW</span>
+                                    </div>
+                                    <div class="player-position w-12 h-12 bg-white rounded-full border-2 border-gray-300 flex items-center justify-center shadow-lg cursor-pointer hover:bg-gray-50 transition-colors" data-position="attacker">
+                                        <span class="text-xs font-bold text-gray-700">FW</span>
+                                    </div>
+                                </div>
+
+                                <!-- Goalkeeper -->
+                                <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                                    <div class="player-position w-12 h-12 bg-orange-100 border-2 border-orange-300 rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-orange-50 transition-colors" data-position="goalkeeper">
+                                        <span class="text-xs font-bold text-orange-700">GK</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Player Selection Sidebar -->
+                    <div class="lg:w-1/3">
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Joueurs Disponibles</h3>
+                            
+                            <!-- Filter by Position -->
+                            <div class="mb-4">
+                                <div class="flex space-x-2 text-xs">
+                                    <button class="px-3 py-1 bg-soccer-green-100 text-soccer-green-700 rounded-full font-medium">Tous</button>
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">GK</button>
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">DEF</button>
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">MF</button>
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200">ATT</button>
+                                </div>
+                            </div>
+
+                            <!-- Available Players List -->
+                            <div class="space-y-3 max-h-80 overflow-y-auto">
+                                <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" data-draggable="true" data-player-id="1">
+                                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <span class="text-xs font-bold text-gray-600">CC</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900 text-sm">Chanal Christophe</p>
+                                        <p class="text-xs text-gray-500">Milieu • ⭐⭐⭐</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" data-draggable="true" data-player-id="2">
+                                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <span class="text-xs font-bold text-gray-600">ML</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900 text-sm">Martin Lucas</p>
+                                        <p class="text-xs text-gray-500">Gardien • ⭐⭐</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" data-draggable="true" data-player-id="3">
+                                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <span class="text-xs font-bold text-gray-600">DA</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900 text-sm">Dubois Antoine</p>
+                                        <p class="text-xs text-gray-500">Attaquant • ⭐⭐⭐</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" data-draggable="true" data-player-id="4">
+                                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                                        <span class="text-xs font-bold text-gray-600">LT</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900 text-sm">Leroy Thomas</p>
+                                        <p class="text-xs text-gray-500">Défenseur • ⭐⭐</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Team Stats -->
+                            <div class="mt-6 pt-4 border-t border-gray-200">
+                                <h4 class="font-medium text-gray-900 mb-3">Statistiques d'Équipe</h4>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">Joueurs sélectionnés</span>
+                                        <span class="font-medium" data-bind="selectedPlayersCount">3/11</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">Note moyenne</span>
+                                        <span class="font-medium" data-bind="averageRating">2.7 ⭐</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">Formation</span>
+                                        <span class="font-medium" data-bind="currentFormation">4-4-2</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: TeamCompositionTab -->
+
+        </main>
+
+        <!-- Create Player Modal -->
+        <!-- @COMPONENT: CreatePlayerModal [showModal state] -->
+        <div id="create-player-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50" data-modal="createPlayer">
+            <div class="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto" data-implementation="Modal should close on outside click and escape key">
+                
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Nouveau Joueur</h3>
+                    <button class="text-gray-400 hover:text-gray-600" data-event="click:closeModal">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <form class="p-6 space-y-6" data-event="submit:handleCreatePlayer">
+                    
+                    <!-- Personal Information -->
+                    <div class="space-y-4">
+                        <h4 class="font-medium text-gray-900">Informations personnelles</h4>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Prénom *</label>
+                                <input type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-soccer-green-500 focus:border-transparent" data-bind="firstName" placeholder="Christophe">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
+                                <input type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-soccer-green-500 focus:border-transparent" data-bind="lastName" placeholder="Chanal">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Position and Preferences -->
+                    <div class="space-y-4">
+                        <h4 class="font-medium text-gray-900">Position et préférences</h4>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Position préférée *</label>
+                            <select required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-soccer-green-500 focus:border-transparent" data-bind="preferredPosition">
+                                <option value="">Sélectionner une position</option>
+                                <option value="goalkeeper">Gardien</option>
+                                <option value="defender">Défenseur</option>
+                                <option value="midfielder">Milieu</option>
+                                <option value="attacker">Attaquant</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pied fort *</label>
+                            <div class="flex space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="strongFoot" value="left" class="text-soccer-green-500 focus:ring-soccer-green-500" data-bind="strongFoot">
+                                    <span class="ml-2 text-sm text-gray-700">Gauche</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="strongFoot" value="right" class="text-soccer-green-500 focus:ring-soccer-green-500" data-bind="strongFoot">
+                                    <span class="ml-2 text-sm text-gray-700">Droit</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="strongFoot" value="both" class="text-soccer-green-500 focus:ring-soccer-green-500" data-bind="strongFoot">
+                                    <span class="ml-2 text-sm text-gray-700">Les deux</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Overall Rating -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Note générale</label>
+                        <div class="flex items-center space-x-2">
+                            <button type="button" class="star-rating w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="1">
+                                <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                </svg>
+                            </button>
+                            <button type="button" class="star-rating w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="2">
+                                <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                </svg>
+                            </button>
+                            <button type="button" class="star-rating w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="3">
+                                <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                </svg>
+                            </button>
+                            <span class="text-sm text-gray-600 ml-3" data-bind="ratingText">Aucune note</span>
+                        </div>
+                    </div>
+
+                    <!-- Skills Rating -->
+                    <div class="space-y-4">
+                        <h4 class="font-medium text-gray-900">Compétences (sur 3 points)</h4>
+                        
+                        <!-- Speed -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-medium text-gray-700">Vitesse</label>
+                            <div class="flex space-x-1">
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="speed" data-level="1"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="speed" data-level="2"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="speed" data-level="3"></button>
+                            </div>
+                        </div>
+
+                        <!-- Endurance -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-medium text-gray-700">Endurance</label>
+                            <div class="flex space-x-1">
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="endurance" data-level="1"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="endurance" data-level="2"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="endurance" data-level="3"></button>
+                            </div>
+                        </div>
+
+                        <!-- Technique -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-medium text-gray-700">Technique</label>
+                            <div class="flex space-x-1">
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="technique" data-level="1"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="technique" data-level="2"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="technique" data-level="3"></button>
+                            </div>
+                        </div>
+
+                        <!-- Heading -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-medium text-gray-700">Jeu de tête</label>
+                            <div class="flex space-x-1">
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="heading" data-level="1"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="heading" data-level="2"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="heading" data-level="3"></button>
+                            </div>
+                        </div>
+
+                        <!-- Physical -->
+                        <div class="flex justify-between items-center">
+                            <label class="text-sm font-medium text-gray-700">Physique</label>
+                            <div class="flex space-x-1">
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="physical" data-level="1"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="physical" data-level="2"></button>
+                                <button type="button" class="skill-rating w-4 h-4 rounded-full bg-gray-200 hover:bg-soccer-green-500 transition-colors" data-skill="physical" data-level="3"></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Club Activities -->
+                    <div class="space-y-3">
+                        <h4 class="font-medium text-gray-900">Activités du club</h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="text-soccer-green-500 focus:ring-soccer-green-500 rounded" data-bind="activities.training">
+                                <span class="ml-2 text-sm text-gray-700">Participe aux entraînements</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="text-soccer-green-500 focus:ring-soccer-green-500 rounded" data-bind="activities.matches">
+                                <span class="ml-2 text-sm text-gray-700">Disponible pour les matchs</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="text-soccer-green-500 focus:ring-soccer-green-500 rounded" data-bind="activities.tournaments">
+                                <span class="ml-2 text-sm text-gray-700">Participe aux tournois</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="text-soccer-green-500 focus:ring-soccer-green-500 rounded" data-bind="activities.events">
+                                <span class="ml-2 text-sm text-gray-700">Événements du club</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-3 pt-4">
+                        <button type="button" class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" data-event="click:closeModal">
+                            Annuler
+                        </button>
+                        <button type="submit" class="flex-1 px-4 py-2 bg-soccer-green-500 text-white rounded-lg hover:bg-soccer-green-600 transition-colors font-medium">
+                            Créer le joueur
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: CreatePlayerModal -->
+
+    </div>
+    <!-- @END_COMPONENT: AppLayout -->
+
+    <script>
+        // Simple UI state management and interactions
+        (function() {
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('[data-tab]');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+                    
+                    // Update tab buttons
+                    tabs.forEach(t => {
+                        t.classList.remove('nav-tab-active', 'text-soccer-green-600', 'border-b-2', 'border-soccer-green-500', 'bg-soccer-green-50');
+                        t.classList.add('nav-tab', 'text-gray-500');
+                    });
+                    
+                    tab.classList.remove('nav-tab', 'text-gray-500');
+                    tab.classList.add('nav-tab-active', 'text-soccer-green-600', 'border-b-2', 'border-soccer-green-500');
+                    
+                    if (tab.closest('.md\\:hidden')) {
+                        tab.classList.add('bg-soccer-green-50');
+                    }
+                    
+                    // Update content
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    
+                    const targetContent = document.getElementById(targetTab + '-tab');
+                    if (targetContent) {
+                        targetContent.classList.remove('hidden');
+                    }
+                });
+            });
+
+            // Modal functionality
+            const createPlayerButton = document.querySelector('[data-event="click:handleCreatePlayer"]');
+            const modal = document.getElementById('create-player-modal');
+            const closeModalButtons = document.querySelectorAll('[data-event="click:closeModal"]');
+
+            if (createPlayerButton && modal) {
+                createPlayerButton.addEventListener('click', () => {
+                    modal.classList.remove('hidden');
+                });
+            }
+
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                });
+            });
+
+            // Close modal on outside click
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Star rating functionality
+            const starRatings = document.querySelectorAll('.star-rating');
+            let currentOverallRating = 0;
+
+            starRatings.forEach(star => {
+                star.addEventListener('click', () => {
+                    const rating = parseInt(star.dataset.rating);
+                    currentOverallRating = rating;
+                    updateStarDisplay(rating);
+                    updateRatingText(rating);
+                });
+
+                star.addEventListener('mouseenter', () => {
+                    const rating = parseInt(star.dataset.rating);
+                    updateStarDisplay(rating);
+                });
+            });
+
+            function updateStarDisplay(rating) {
+                starRatings.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.remove('text-gray-300');
+                        star.classList.add('text-yellow-400');
+                    } else {
+                        star.classList.remove('text-yellow-400');
+                        star.classList.add('text-gray-300');
+                    }
+                });
+            }
+
+            function updateRatingText(rating) {
+                const ratingText = document.querySelector('[data-bind="ratingText"]');
+                if (ratingText) {
+                    const texts = ['Aucune note', 'Débutant', 'Intermédiaire', 'Avancé'];
+                    ratingText.textContent = texts[rating] || 'Aucune note';
+                }
+            }
+
+            // Skill rating functionality
+            const skillRatings = document.querySelectorAll('.skill-rating');
+            const skillLevels = {};
+
+            skillRatings.forEach(skill => {
+                skill.addEventListener('click', () => {
+                    const skillName = skill.dataset.skill;
+                    const level = parseInt(skill.dataset.level);
+                    
+                    skillLevels[skillName] = level;
+                    updateSkillDisplay(skillName, level);
+                });
+            });
+
+            function updateSkillDisplay(skillName, level) {
+                const skillButtons = document.querySelectorAll(`[data-skill="${skillName}"]`);
+                skillButtons.forEach((button, index) => {
+                    if (index < level) {
+                        button.classList.remove('bg-gray-200');
+                        button.classList.add('bg-soccer-green-500');
+                    } else {
+                        button.classList.remove('bg-soccer-green-500');
+                        button.classList.add('bg-gray-200');
+                    }
+                });
+            }
+
+            // Reset star ratings when modal closes
+            document.addEventListener('click', (e) => {
+                if (e.target.matches('[data-event="click:closeModal"]') || 
+                    (e.target === modal)) {
+                    currentOverallRating = 0;
+                    updateStarDisplay(0);
+                    updateRatingText(0);
+                    
+                    // Reset skill ratings
+                    Object.keys(skillLevels).forEach(skill => {
+                        updateSkillDisplay(skill, 0);
+                    });
+                    for (let key in skillLevels) {
+                        delete skillLevels[key];
+                    }
+                }
+            });
+
+            // Form submission handler
+            const createPlayerForm = document.querySelector('form[data-event="submit:handleCreatePlayer"]');
+            if (createPlayerForm) {
+                createPlayerForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    // TODO: Implement form validation and player creation logic
+                    console.log('Player creation form submitted');
+                    console.log('Overall rating:', currentOverallRating);
+                    console.log('Skill levels:', skillLevels);
+                    
+                    // Close modal after successful creation
+                    modal.classList.add('hidden');
+                });
+            }
+
+            // TODO: Implement drag and drop functionality for team formation
+            // TODO: Implement player search and filtering
+            // TODO: Implement data persistence
+            // TODO: Implement team formation save/load functionality
+        })();
+    </script>
+</body>
+</html>
